@@ -1,34 +1,37 @@
 package com.epam.izh.rd.online.entity;
 
-/**
- * Покемон. Поля должны заполняться из JSON, который возвратит внешний REST-service
- * Для маппинга значений из массива stats рекомендуется использовать отдельный класс Stat и аннотацию @JsonCreator
- */
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
+
+@Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Pokemon {
-
-    /**
-     * Уникальный идентификатор, маппится из поля pokemonId
-     */
+    private short hp;
+    private short attack;
+    private short defense;
+    @JsonProperty("front_default")
+    private String imageUrl;
+    @JsonProperty("id")
     private long pokemonId;
-
-    /**
-     * Имя покемона, маппится из поля pokemonName
-     */
+    @JsonProperty("name")
     private String pokemonName;
 
-    /**
-     * Здоровье покемона, маппится из массива объектов stats со значением name: "hp"
-     */
-    private short hp;
+    @JsonCreator
+    public Pokemon(@JsonProperty("stats") Stat[] stats, @JsonProperty("sprites") Sprites sprites) {
+        this.hp = stats[0].getStatValue();
+        this.attack = stats[1].getStatValue();
+        this.defense = stats[2].getStatValue();
+        this.imageUrl = sprites.getImageUrl();
+    }
 
-    /**
-     * Атака покемона, маппится из массива объектов stats со значением name: "attack"
-     */
-    private short attack;
-
-    /**
-     * Защита покемона, маппится из массива объектов stats со значением name: "defense"
-     */
-    private short defense;
-
+    public Pokemon(long pokemonId, String pokemonName, short hp, short attack, short defense, String imageUrl) {
+        this.pokemonId = pokemonId;
+        this.pokemonName = pokemonName;
+        this.hp = hp;
+        this.attack = attack;
+        this.defense = defense;
+        this.imageUrl = imageUrl;
+    }
 }
